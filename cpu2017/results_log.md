@@ -239,32 +239,214 @@ echo 1 | sudo -S python3 run_amd_rate_gcc15_1_znver5_A1.py 2>&1 | tee /tmp/specc
 
 ---
 
-## 4. 对比汇总
+## 4. Run 4 — GCC 11（系统默认）+ AMD 优化 Backport 2P（2026-03-18 17:41 ~ 22:12）
 
-### 4.1 编译器对比（2P，GCC 15.1 vs AOCC 5.0.0）
+### 4.1 背景与目标
+
+在标准 SPEC CPU2017 安装（dir1）中，使用系统 GCC 11.4.0 + 从 AMD GCC15 组件包 backport 的优化 flag 和运行时库（libamdlibm、libamdalloc），构建自定义 config，与 GCC 15.1 / AOCC 组件包结果对比，量化编译器版本差异。
+
+### 4.2 操作步骤
+
+#### 步骤 1：创建 GCC 11 config 文件（上传至 dir1）
+
+在 `c:\tmp\upload_cfg.py` 中生成并通过 SFTP 上传以下文件到 `/home/zz/performance-tools/speccpu/cpu2017/config/`：
+
+| 文件 | 说明 |
+|------|------|
+| `gcc11_native_rate.cfg` | 主配置，`hw_*` / `sw_*` 字段、`preENV_LD_LIBRARY_PATH` 指向 dir2 AMD 运行时库、`flagsurl` 指向 dir2 gcc.xml |
+| `gcc11_native_rate_flags.inc` | 编译器 / 链接器 flag，从 AMD GCC15 config backport，去除 GCC 11 不兼容的 `-fveclib=AMDLIBM`，`-march=native`（GCC 11 最高支持 znver3），`LDOPTIMIZE` 加 `-L<dir2_libs>` |
+| `gcc11_native_rate_portability.inc` | 可移植性 flag（与 AMD 原版相同） |
+| `gcc11_native_rate_workaround.inc` | 各 benchmark workaround flag |
+
+关键 flag 对比（GCC 15.1 → GCC 11）：
+
+| 项目 | AMD GCC15 | GCC 11 本次 |
+|------|-----------|-------------|
+| 目标架构 | `-march=znver5` | `-march=native`（Turin 上等效 znver3 特性集）|
+| 向量数学库 | `-fveclib=AMDLIBM` | 删除（GCC 11 不支持）|
+| 链接器路径 | 组件包内置 | `LDOPTIMIZE = -z muldefs -L<dir2_libs>` |
+| 运行时库 | libamdlibm + libamdalloc | 同（从 dir2 借用） |
+
+#### 步骤 2：修复 libamdalloc.so 符号链接
+
+dir2 仅有 `libamdalloc.so.2`，缺少链接器所需的 `libamdalloc.so`，导致首次编译失败：
+
+```bash
+ln -sf .../libamdalloc.so.2 .../libamdalloc.so
+```
+
+#### 步骤 3：创建并上传运行脚本
+
+在 `c:\tmp\upload_scripts.py` 中生成并上传至 `dir1/`：
+
+| 文件 | 说明 |
+|------|------|
+| `run_gcc11_2p.sh` | 系统调优 + `numactl --interleave=all runcpu --copies=384 intrate`，`--copies=192 fprate` |
+| `run_gcc11_1p.sh` | 系统调优 + `numactl --localalloc --physcpubind=<socket0>` pinned，`--copies=192 intrate`，`--copies=96 fprate` |
+
+#### 步骤 4：启动测试
+
+```bash
+# 通过 paramiko SSH 后台运行（无 tmux）
+cd /home/zz/performance-tools/speccpu/cpu2017
+echo 1 | sudo -S bash run_gcc11_2p.sh > /tmp/gcc11_2p_new.log 2>&1 &
+```
+
+运行日志：`/tmp/gcc11_2p_new.log`
+
+### 4.3 配置参数汇总
+
+| 参数 | 值 |
+|------|-------|
+| 测试包路径 | `/home/zz/performance-tools/speccpu/cpu2017/` |
+| Config | `gcc11_native_rate.cfg` |
+| 编译器 | GCC 11.4.0（Ubuntu 22.04 系统自带）|
+| 架构 flag | `-march=native`（Turin = znver3-equiv in GCC 11）|
+| 运行时库 | libamdlibm + libamdalloc（借自 dir2）|
+| `benchmarks` | intrate + fprate |
+| `tuning` | base |
+| `reportable` | False |
+| `iterations` | 1 |
+| `size` | ref |
+| copies（intrate）| 384 |
+| copies（fprate）| 192 |
+| 系统调优 | THP=always，CPU governor=performance，ASLR 关闭，numactl interleave |
+| 结果文件 | `CPU2017.007.intrate.refrate.*`、`CPU2017.008.fprate.refrate.*` |
+
+### 4.4 结果
+
+| 指标 | 分数 |
+|------|------|
+| **SPECrate2017_int_base** | **1155** |
+| **SPECrate2017_fp_base** | **891** |
+| SPECrate2017_int_peak | Not Run |
+| SPECrate2017_fp_peak | Not Run |
+| NR/NS | INVALID（reportable=False，iterations=1，unknown flags warning，预期）|
+
+> 分数由各 benchmark base ratio 几何均值手动计算（intrate 10项，fprate 13项），与 SPEC 官方公式一致。
+
+**总耗时：** 约 4 小时 31 分钟（17:41 → 22:12）
+- intrate 编译 + 运行：~1h47min（17:41 → 19:28）
+- fprate 编译：~1h33min（19:28 → 21:01，LTO 使 blender_r 编译耗时 ~17min）
+- fprate 运行：~1h11min（21:01 → 22:12）
+
+---
+
+## 5. Run 5 — GCC 11（系统默认）+ AMD 优化 Backport 1P（2026-03-18 23:00 ~ 2026-03-19 01:42）
+
+### 5.1 背景与目标
+
+在与 Run 4 完全相同的 GCC 11 + AMD backport 配置下，通过 numactl 将进程 pin 至 socket 0（192 个逻辑核），模拟单路 EPYC 9645，与 Run 4（2P）对比验证 GCC 11 下的 NUMA 扩展性，并与 Run 3（GCC 15.1 1P）对比量化编译器版本差距。
+
+### 5.2 操作步骤
+
+#### 步骤 1：确认 NUMA 拓扑
+
+```
+node 0 CPUs: 0-95, 192-287   ← socket 0（使用此范围）
+node 1 CPUs: 96-191, 288-383 ← socket 1（不使用）
+```
+
+Socket 0 逻辑核：`SOCKET0_CPUS = 0-95（物理核）+ 192-287（SMT 兄弟）= 192 核`
+
+#### 步骤 2：启动测试
+
+```bash
+# 通过 paramiko SSH 后台运行
+cd /home/zz/performance-tools/speccpu/cpu2017
+echo 1 | sudo -S bash run_gcc11_1p.sh > /tmp/gcc11_1p_new.log 2>&1 &
+```
+
+`run_gcc11_1p.sh` 关键内容：
+```bash
+numactl --localalloc --physcpubind="$SOCKET0" runcpu \
+    --config=gcc11_native_rate.cfg --tune=base --size=ref \
+    --iterations=1 --noreportable --copies=192 intrate
+numactl --localalloc --physcpubind="$SOCKET0" runcpu \
+    --config=gcc11_native_rate.cfg --tune=base --size=ref \
+    --iterations=1 --noreportable --copies=96 fprate
+```
+
+运行日志：`/tmp/gcc11_1p_new.log`
+
+### 5.3 配置参数汇总
+
+| 参数 | 值 |
+|------|-------|
+| 测试包路径 | `/home/zz/performance-tools/speccpu/cpu2017/` |
+| Config | `gcc11_native_rate.cfg` |
+| 编译器 | GCC 11.4.0 |
+| `NumberOfSockets` | 1（通过 numactl pin 实现）|
+| `cores_affinity_list` | CPUs 0-95 + 192-287（socket 0 全部逻辑核）|
+| `benchmarks` | intrate + fprate |
+| `tuning` | base |
+| `reportable` | False |
+| `iterations` | 1 |
+| `size` | ref |
+| copies（intrate）| 192 |
+| copies（fprate）| **96**（正确，本次无超订）|
+| 系统调优 | THP=always，CPU governor=performance，ASLR 关闭，numactl localalloc |
+| 结果文件 | `CPU2017.009.intrate.refrate.*`、`CPU2017.010.fprate.refrate.*` |
+
+### 5.4 结果
+
+| 指标 | 分数 |
+|------|------|
+| **SPECrate2017_int_base** | **711** |
+| **SPECrate2017_fp_base** | **612** |
+| SPECrate2017_int_peak | Not Run |
+| SPECrate2017_fp_peak | Not Run |
+| NR/NS | INVALID（reportable=False，iterations=1，预期）|
+
+**总耗时：** 约 2 小时 42 分钟（23:00 → 01:42）
+- intrate 编译（利用缓存）+ 运行：~1h13min（23:00 → 00:13）
+- fprate 编译（利用缓存）+ 运行：~1h29min（00:13 → 01:42）
+
+---
+
+## 6. 对比汇总
+
+### 6.1 编译器对比（2P，GCC 15.1 vs AOCC 5.0.0）
 
 | 指标 | GCC 15.1 2P | AOCC 5.0.0 2P | AOCC 领先 |
 |------|-------------|---------------|-----------|
 | **int_base** | 1510 | **1960** | **+30%** |
 | **fp_base** | 1310 | **1820** | **+39%** |
 
-### 4.2 路数扩展性（GCC 15.1，1P vs 2P）
+### 6.2 GCC 版本对比（2P，GCC 11 vs GCC 15.1）
+
+| 指标 | GCC 11 2P | GCC 15.1 2P | GCC 15.1 领先 |
+|------|-----------|-------------|---------------|
+| **int_base** | 1155 | **1510** | **+31%** |
+| **fp_base** | 891 | **1310** | **+47%** |
+
+### 6.3 路数扩展性（GCC 11，1P vs 2P）
+
+| 指标 | GCC 11 1P | GCC 11 2P | 2P/1P 比值 |
+|------|-----------|-----------|-----------|
+| **int_base** | **711** | 1155 | 1.62x |
+| **fp_base** | **612** | 891 | 1.46x |
+
+### 6.4 路数扩展性（GCC 15.1，1P vs 2P）
 
 | 指标 | GCC 15.1 1P | GCC 15.1 2P | 2P/1P 比值 |
 |------|-------------|-------------|-----------|
 | **int_base** | **749** | 1510 | 2.01x |
 | **fp_base** | **625** | 1310 | 2.10x |
 
-> 注：1P intrate 使用 192 copies（socket 0 逻辑核），2P 使用 384 copies；int_base 比值 ~2.01x，接近线性扩展。
-> fp_base 1P 实际跑了 192 copies（应为 96，脚本按逻辑核数计算导致超订），分数 625 仍具参考价值（超订下 copies × ratio 与正常 96 copies 近似），但 fprate 耗时约翻倍。
+> 注：GCC 15.1 1P fp_base 实际跑了 192 copies（应为 96，AMD 脚本按逻辑核数计算导致超订），分数 625 偏低，2P/1P 比值 2.10x 偏高，参考价值有限。GCC 11 1P 副本数正确（96 copies），扩展性数据更可信。
 
-### 4.3 分析
+### 6.5 分析
 
-- **AOCC vs GCC（2P）**
+- **AOCC vs GCC 15.1（2P）**
   - int_base +30%：AOCC Clang 后端循环向量化、IPA 优化显著优于 GCC。
   - fp_base +39%：AOCC 对 Fortran（bwaves、wrf、roms 等）和浮点密集型 C（lbm、fotonik3d）有专项优化，libamdlibm 替换效果突出。
-  - 两次测试条件完全一致（1 iteration、base、ref、384/192 copies），差异完全来自编译器和运行时库。
 
-- **1P vs 2P 扩展性（GCC 15.1）**
-  - int_base 从 749 → 1510，扩展比 2.01x，接近理想线性（2.00x）。
-  - 说明该系统双路 NUMA 架构对整数计算扩展性良好，跨 socket 访问开销较小。
+- **GCC 15.1 vs GCC 11（2P，相同 AMD 优化 flag 框架）**
+  - int_base +31%：GCC 15.1 对 znver5 有专项微架构优化（`-march=znver5` vs `-march=native`→znver3-equiv）；GCC 15 IPA / LTO 引擎也更成熟。
+  - fp_base +47%：差距更大，主要来自 GCC 15 对 Fortran 的改进（`-fveclib=AMDLIBM` 加持）及 znver5 AVX-512 向量化（GCC 11 无 znver5 后端，部分向量宽度受限）。
+
+- **GCC 11 1P vs 2P 扩展性**
+  - int_base 从 711 → 1155，扩展比仅 **1.62x**（理想应为 2.00x）。
+  - fp_base 从 612 → 891，扩展比 **1.46x**，Fortran 密集 benchmark（bwaves、roms 等）跨 NUMA 内存带宽争用明显。
+  - 对比 GCC 15.1 的 2.01x：GCC 11 跨 socket 扩展性显著差于 GCC 15.1，推测原因为 GCC 11 LTO + IPA 在多副本场景下内存局部性优化不足，导致跨 NUMA 访问开销更突出。
