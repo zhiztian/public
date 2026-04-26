@@ -1,18 +1,19 @@
 #!/bin/bash
-# 00_env_audit.sh — software stack preflight + diagnostic dump
-# RUN FIRST. Captures everything we need to triage offline.
+# 03_env_audit.sh — software stack preflight + diagnostic dump
+# 跑在 02_install_runtime.sh 之后；前提 conda env 已激活。
 #
-# Output: results/00_env_audit/
+# Output: results/03_env_audit/
 #   identity.txt, nvidia_smi*.txt, lspci_acs_links.txt, dmesg_relevant.txt,
-#   python_stack.txt, vllm_help.txt, sglang_help.txt, attention_probe.json
+#   python_stack.txt, vllm_help.txt, sglang_help.txt, attention_probe.json,
+#   cudart_audit.txt   <-- 关键：cudart 必须 12.8（12080）；≥12.9 vLLM 起不来
 #
-# Exit nonzero if a critical preflight fails (driver missing, no GPUs, etc.)
+# Exit nonzero if a critical preflight fails (driver missing, no GPUs, cudart >=12.9 等)
 
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-OUT="$RESULTS_ROOT/00_env_audit"
+OUT="$RESULTS_ROOT/03_env_audit"
 mkdir -p "$OUT"
 
 # 第一道闸：runtime 必须就位（conda env 激活，torch+vllm 可 import）
@@ -99,6 +100,43 @@ probe("triton_kernel", t_triton)
 print(json.dumps(out, indent=2))
 PY
 
+log "==> cudart 实际加载版本检查（关键：必须 12080 = 12.8；≥12090 vLLM 起不来）"
+$PYTHON_BIN - > "$OUT/cudart_audit.txt" 2>&1 <<'PY'
+import json, ctypes, sys
+import importlib.metadata as md
+
+out = {}
+try:
+    out["nvidia-cuda-runtime-cu12_pkg"] = md.version("nvidia-cuda-runtime-cu12")
+except md.PackageNotFoundError:
+    out["nvidia-cuda-runtime-cu12_pkg"] = None
+
+try:
+    import torch
+    out["torch_version"] = torch.__version__
+    out["torch_cuda"] = torch.version.cuda
+    torch.cuda.init()
+    v = ctypes.c_int()
+    ctypes.CDLL("libcudart.so.12").cudaRuntimeGetVersion(ctypes.byref(v))
+    out["cudaRuntimeGetVersion"] = v.value
+    out["loaded_libcudart_paths"] = sorted({
+        line.split()[-1] for line in open("/proc/self/maps")
+        if "libcudart.so" in line
+    })
+    if v.value >= 12090:
+        out["verdict"] = f"FAIL: cudart {v.value} >= 12.9, vLLM 会起不来"
+    elif v.value < 12080:
+        out["verdict"] = f"WARN: cudart {v.value} < 12.8，5090 sm_120 兼容性未知"
+    else:
+        out["verdict"] = "OK: cudart in 12.8 range"
+except Exception as e:
+    out["error"] = f"{type(e).__name__}: {e}"
+    out["verdict"] = "FAIL: probe error"
+
+print(json.dumps(out, indent=2))
+PY
+cat "$OUT/cudart_audit.txt"
+
 log "==> NCCL minimal probe (TP=2 echo, NCCL_P2P_DISABLE=1)"
 nccl_env
 $PYTHON_BIN - > "$OUT/nccl_probe.txt" 2>&1 <<'PY'
@@ -135,6 +173,11 @@ fi
 # NCCL probe 必须没有 bash 错误（说明 PYTHON_BIN 解析正常）
 if grep -qE 'command not found|No such file' "$OUT/nccl_probe.txt" 2>/dev/null; then
     log "FAIL: nccl_probe 出现 shell 错误，PYTHON_BIN 可能为空 — see $OUT/nccl_probe.txt"
+    fail=1
+fi
+# cudart 必须 < 12.9（客户驱动 570.148.08 / CUDA 12.8 — 高版本 cudart 让 vLLM 起不来）
+if grep -q '"verdict": "FAIL' "$OUT/cudart_audit.txt" 2>/dev/null; then
+    log "FAIL: cudart 版本不对 — see $OUT/cudart_audit.txt"
     fail=1
 fi
 # vllm/sglang help 必须真有内容（>5 行说明真打印了 help）

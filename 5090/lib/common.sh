@@ -216,9 +216,9 @@ detect_cuda_graph_mode() {
 
 # -------- safe-to-proceed gate: smoke test must have passed --------
 require_smoke_pass() {
-    local smoke_status="$RESULTS_ROOT/10_smoke_8b/status.json"
+    local smoke_status="$RESULTS_ROOT/05_smoke_8b/status.json"
     if [[ ! -f "$smoke_status" ]]; then
-        die "smoke test not run yet — run 10_smoke_8b.sh first"
+        die "smoke test not run yet — run 05_smoke_8b.sh first"
     fi
     local s
     s=$(python3 -c "import json; print(json.load(open('$smoke_status'))['status'])")

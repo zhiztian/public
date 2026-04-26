@@ -1,5 +1,5 @@
 #!/bin/bash
-# 10_smoke_8b.sh — DeepSeek-R1-Distill-Llama-8B smoke test
+# 05_smoke_8b.sh — DeepSeek-R1-Distill-Llama-8B smoke test
 # MUST pass before running 20_llm_matrix.sh. Validates:
 #   - sm_120 kernel path
 #   - attention backend selection
@@ -17,7 +17,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 # 第一道闸：runtime 就位（否则 setsid 会跑空命令，watchdog 等 600s 才超时）
 require_runtime
 
-OUT="$RESULTS_ROOT/10_smoke_8b"
+OUT="$RESULTS_ROOT/05_smoke_8b"
 mkdir -p "$OUT"
 
 PORT=8001

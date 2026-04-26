@@ -1,7 +1,7 @@
 # 5090 + 9A55 Benchmark Suite
 
 **Target platform**: 2× EPYC 9A55 (84c, Turin) × 8× RTX 5090 (Blackwell GB202, 32GB GDDR7, PCIe Gen5)
-**Driver assumed**: tinygrad fork `570.148.08-p2p` (NCCL P2P collective broken — must keep `NCCL_P2P_DISABLE=1`)
+**Driver assumed**: tinygrad fork open kernel module `570.148.08-p2p` / **CUDA 12.8** (NCCL P2P collective broken — must keep `NCCL_P2P_DISABLE=1`; cudart ≥12.9 让 vLLM 起不来 — `02_install_runtime.sh` 钉死 `nvidia-*-cu12<12.9`)
 **BIOS assumed**: ACS=Disabled, ReBAR enabled, IOMMU disabled, PCIe Gen5 confirmed
 
 This is the **offline-execution script suite** for Phase 3 (LLM inference) and Phase 4 (SPEC CPU 2017). Phases 1–2 (driver, P2P, H2D, NCCL SHM) already complete.
@@ -11,16 +11,25 @@ This is the **offline-execution script suite** for Phase 3 (LLM inference) and P
 ## Execution order
 
 ```
-0a. 02_install_runtime.sh    # 一次性：pip install vllm + sglang 进 cuda_vllm
-0b. 01_download_models.sh    # ~285 GB: 4 models + ShareGPT. 一次性
-1.  00_env_audit.sh          # software stack + system snapshot. ALWAYS RUN FIRST.
-2.  10_smoke_8b.sh           # DeepSeek-8B smoke. Must PASS before matrix.
-3.  20_llm_matrix.sh         # Phase 3 main: vLLM + SGLang × 3 models × TP × batch × {eager,graph}
-4.  30_speccpu_9a55.sh       # Phase 4: AOCC 5.0 + GCC 15.1 intrate+fprate ref
-5.  99_collect.sh            # Pack results/ → tar.gz + index.json, ready for git push
+1.  01_create_env.sh         # 建 conda env cuda_vllm（python 3.11）。一次性。
+2.  02_install_runtime.sh    # 在 env 内装 torch/vllm/sglang，钉死 cudart<12.9
+3.  03_env_audit.sh          # software + cudart audit. 必须 cudart=12.8（12080）
+4.  04_download_models.sh    # ~285 GB: 4 models + ShareGPT. 一次性
+5.  05_smoke_8b.sh           # DeepSeek-8B smoke. Must PASS before matrix.
+6.  20_llm_matrix.sh         # Phase 3 main: vLLM + SGLang × 3 models × TP × batch × {eager,graph}
+7.  30_speccpu_9a55.sh       # Phase 4: AOCC 5.0 + GCC 15.1 intrate+fprate ref
+8.  99_collect.sh            # Pack results/ → tar.gz + index.json, ready for git push
 ```
 
 Run sequentially. Each script reads the previous one's status; smoke failure aborts matrix.
+
+**步骤 1→2 之间需要手动激活 conda env**：
+```bash
+bash 01_create_env.sh
+source ~/miniconda3/bin/activate cuda_vllm
+bash 02_install_runtime.sh
+# 之后保持 env 激活，依次跑 03 → 04 → 05 → 20 → ...
+```
 
 **Estimated wallclock**:
 - 00: ~3 min
@@ -31,28 +40,36 @@ Run sequentially. Each script reads the previous one's status; smoke failure abo
 
 ## Prerequisites on target server
 
-**❗ 必须先激活 conda env，否则所有脚本立即 die（require_runtime 强校验）**
+**❗ 步骤 1（建 env）后必须手动激活，否则后续所有脚本立即 die**
 
-第一次 dry-run 踩过的坑：脚本默认 `PYTHON_BIN=$(command -v python)`，
-但 Ubuntu 24.04 系统只有 `python3` 没有 `python`，导致 `$PYTHON_BIN -` 被
-shell 当成命令 `-` 执行；同样 `vllm` 不在 PATH 时 `setsid numactl ... "" serve`
-会让 numactl 试图执行空字符串。`require_runtime` 现在会检查
-PYTHON_BIN/VLLM_BIN 都可执行 + `python -c 'import torch, vllm'` 通过。
+`require_runtime` 强校验 `PYTHON_BIN` / `VLLM_BIN` 可执行 + `python -c 'import torch, vllm'` 通过。
+第一次实测踩过：Ubuntu 24.04 没有裸 `python`，激活 conda env 后才有；vllm 不在 PATH 时 setsid 会跑空命令。
 
 ```bash
-# Conda env — 必须先激活！
+# 1) 建 env
+bash 01_create_env.sh
+
+# 2) 激活（必须！）
 source ~/miniconda3/bin/activate cuda_vllm
-# cuda_vllm 自带 torch+CUDA，但 vllm/sglang 需要装：
-bash 02_install_runtime.sh                                          # 一次性
+
+# 3) 装 runtime（torch nightly cu128 + vllm + sglang，钉 cudart<12.9）
+bash 02_install_runtime.sh
 python -c "import torch, vllm; print(torch.cuda.get_arch_list())"  # must include sm_120
 
-# Models — run 01_download_models.sh first (~285 GB to ~/models + ~/datasets)
-#   pip install -U huggingface_hub   # provides `hf` CLI
-#   hf auth login                     # public models too — looser rate limits
-#   bash 01_download_models.sh
+# 4) audit
+bash 03_env_audit.sh
+# 必须看到 cudart_audit.txt 里 cudaRuntimeGetVersion=12080
+
+# 5) 模型（~285 GB）
+hf auth login                # 可选，松一点 rate limit
+bash 04_download_models.sh
 ls ~/models/deepseek-r1-8b ~/models/deepseek-r1-70b \
    ~/models/gpt-oss-120b ~/models/qwen3-32b
 ls ~/datasets/sharegpt/*.json
+
+# 6) smoke + matrix
+bash 05_smoke_8b.sh
+bash 20_llm_matrix.sh
 
 # SPEC CPU 2017
 ls ~/speccpu2017/shrc
@@ -65,20 +82,20 @@ ls /opt/gcc-15.1/bin/gcc
 If any path differs, set env vars at top of script invocation:
 
 ```bash
-MODELS_DIR=/data/models SPEC_HOME=/data/speccpu2017 bash 00_env_audit.sh
+MODELS_DIR=/data/models SPEC_HOME=/data/speccpu2017 bash 03_env_audit.sh
 ```
 
 ## Output layout
 
 ```
 results/
-├── 00_env_audit/
+├── 03_env_audit/
 │   ├── identity.txt, nvidia_smi*.txt, lscpu*, dmidecode.txt
 │   ├── lspci_acs_links.txt, dmesg_relevant.txt, cmdline.txt
 │   ├── python_stack.txt, vllm_help.txt, sglang_help.txt
-│   ├── attention_probe.json, nccl_probe.txt
+│   ├── attention_probe.json, nccl_probe.txt, cudart_audit.txt
 │   └── status.json
-├── 10_smoke_8b/
+├── 05_smoke_8b/
 │   ├── tp1_eager/{server.log,client.log,result.json,status.json,...}
 │   ├── tp2_graph/...
 │   └── status.json
