@@ -11,12 +11,13 @@ This is the **offline-execution script suite** for Phase 3 (LLM inference) and P
 ## Execution order
 
 ```
-0. 01_download_models.sh     # ~285 GB: 4 models + ShareGPT. Run once on first install.
-1. 00_env_audit.sh           # software stack + system snapshot. ALWAYS RUN FIRST.
-2. 10_smoke_8b.sh            # DeepSeek-8B smoke. Must PASS before matrix.
-3. 20_llm_matrix.sh          # Phase 3 main: vLLM + SGLang × 3 models × TP × batch × {eager,graph}
-4. 30_speccpu_9a55.sh        # Phase 4: AOCC 5.0 + GCC 15.1 intrate+fprate ref
-5. 99_collect.sh             # Pack results/ → tar.gz + index.json, ready for git push
+0a. 02_install_runtime.sh    # 一次性：pip install vllm + sglang 进 cuda_vllm
+0b. 01_download_models.sh    # ~285 GB: 4 models + ShareGPT. 一次性
+1.  00_env_audit.sh          # software stack + system snapshot. ALWAYS RUN FIRST.
+2.  10_smoke_8b.sh           # DeepSeek-8B smoke. Must PASS before matrix.
+3.  20_llm_matrix.sh         # Phase 3 main: vLLM + SGLang × 3 models × TP × batch × {eager,graph}
+4.  30_speccpu_9a55.sh       # Phase 4: AOCC 5.0 + GCC 15.1 intrate+fprate ref
+5.  99_collect.sh            # Pack results/ → tar.gz + index.json, ready for git push
 ```
 
 Run sequentially. Each script reads the previous one's status; smoke failure aborts matrix.
@@ -41,6 +42,8 @@ PYTHON_BIN/VLLM_BIN 都可执行 + `python -c 'import torch, vllm'` 通过。
 ```bash
 # Conda env — 必须先激活！
 source ~/miniconda3/bin/activate cuda_vllm
+# cuda_vllm 自带 torch+CUDA，但 vllm/sglang 需要装：
+bash 02_install_runtime.sh                                          # 一次性
 python -c "import torch, vllm; print(torch.cuda.get_arch_list())"  # must include sm_120
 
 # Models — run 01_download_models.sh first (~285 GB to ~/models + ~/datasets)
