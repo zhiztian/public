@@ -11,6 +11,7 @@ This is the **offline-execution script suite** for Phase 3 (LLM inference) and P
 ## Execution order
 
 ```
+0. 01_download_models.sh     # ~285 GB: 4 models + ShareGPT. Run once on first install.
 1. 00_env_audit.sh           # software stack + system snapshot. ALWAYS RUN FIRST.
 2. 10_smoke_8b.sh            # DeepSeek-8B smoke. Must PASS before matrix.
 3. 20_llm_matrix.sh          # Phase 3 main: vLLM + SGLang × 3 models × TP × batch × {eager,graph}
@@ -34,7 +35,10 @@ Run sequentially. Each script reads the previous one's status; smoke failure abo
 conda activate cuda_vllm
 python -c "import torch; print(torch.cuda.get_arch_list())"  # must include sm_120
 
-# Models (run earlier — see workspace bench/5090/methodology/scripts/download_models.sh)
+# Models — run 01_download_models.sh first (~285 GB to ~/models + ~/datasets)
+#   pip install -U huggingface_hub   # provides `hf` CLI
+#   hf auth login                     # public models too — looser rate limits
+#   bash 01_download_models.sh
 ls ~/models/deepseek-r1-8b ~/models/deepseek-r1-70b \
    ~/models/gpt-oss-120b ~/models/qwen3-32b
 ls ~/datasets/sharegpt/*.json
