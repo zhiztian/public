@@ -20,6 +20,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
+require_runtime
 require_smoke_pass
 
 OUT="$RESULTS_ROOT/20_llm_matrix"

@@ -30,10 +30,18 @@ Run sequentially. Each script reads the previous one's status; smoke failure abo
 
 ## Prerequisites on target server
 
+**❗ 必须先激活 conda env，否则所有脚本立即 die（require_runtime 强校验）**
+
+第一次 dry-run 踩过的坑：脚本默认 `PYTHON_BIN=$(command -v python)`，
+但 Ubuntu 24.04 系统只有 `python3` 没有 `python`，导致 `$PYTHON_BIN -` 被
+shell 当成命令 `-` 执行；同样 `vllm` 不在 PATH 时 `setsid numactl ... "" serve`
+会让 numactl 试图执行空字符串。`require_runtime` 现在会检查
+PYTHON_BIN/VLLM_BIN 都可执行 + `python -c 'import torch, vllm'` 通过。
+
 ```bash
-# Conda env
-conda activate cuda_vllm
-python -c "import torch; print(torch.cuda.get_arch_list())"  # must include sm_120
+# Conda env — 必须先激活！
+source ~/miniconda3/bin/activate cuda_vllm
+python -c "import torch, vllm; print(torch.cuda.get_arch_list())"  # must include sm_120
 
 # Models — run 01_download_models.sh first (~285 GB to ~/models + ~/datasets)
 #   pip install -U huggingface_hub   # provides `hf` CLI

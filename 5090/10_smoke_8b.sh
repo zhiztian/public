@@ -14,6 +14,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
+# 第一道闸：runtime 就位（否则 setsid 会跑空命令，watchdog 等 600s 才超时）
+require_runtime
+
 OUT="$RESULTS_ROOT/10_smoke_8b"
 mkdir -p "$OUT"
 

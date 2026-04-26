@@ -10,9 +10,33 @@ mkdir -p "$RESULTS_ROOT" "$CACHE_ROOT"
 
 # -------- conda env (must be activated before running benches) --------
 # user is expected to: `source ~/miniconda3/bin/activate cuda_vllm` before invocation
-PYTHON_BIN="${PYTHON_BIN:-$(command -v python)}"
+# 兜底 python3 — 系统通常没有裸 `python` 命令；后续 require_runtime() 会强校验
+PYTHON_BIN="${PYTHON_BIN:-$(command -v python || command -v python3)}"
 VLLM_BIN="${VLLM_BIN:-$(command -v vllm)}"
-SGLANG_LAUNCH="${SGLANG_LAUNCH:-python -m sglang.launch_server}"
+SGLANG_LAUNCH="${SGLANG_LAUNCH:-${PYTHON_BIN:-python3} -m sglang.launch_server}"
+
+# require_runtime: 第一次实测的根因 — 用户没激活 conda env 直接跑脚本，
+# 系统 /usr/bin/python3 没装 torch/vllm，但脚本不报错继续 setsid 一个空命令，
+# wait_for_endpoint 干等 600s 才超时。这里强校验：缺一个就立刻 die，
+# 给出激活 conda env 的明确提示。
+require_runtime() {
+    local missing=()
+    [[ -z "$PYTHON_BIN" || ! -x "$PYTHON_BIN" ]] && missing+=("python (PYTHON_BIN='$PYTHON_BIN')")
+    [[ -z "$VLLM_BIN"   || ! -x "$VLLM_BIN"   ]] && missing+=("vllm CLI (VLLM_BIN='$VLLM_BIN')")
+    if (( ${#missing[@]} > 0 )); then
+        log "FATAL: 缺失运行时: ${missing[*]}"
+        log "请先激活 conda env，例如:"
+        log "    source ~/miniconda3/bin/activate cuda_vllm"
+        log "    bash $0"
+        exit 2
+    fi
+    if ! "$PYTHON_BIN" -c 'import torch, vllm' 2>/dev/null; then
+        log "FATAL: $PYTHON_BIN 不能 import torch+vllm，conda env 激活了吗？"
+        log "    source ~/miniconda3/bin/activate cuda_vllm"
+        "$PYTHON_BIN" -c 'import torch, vllm' || true
+        exit 2
+    fi
+}
 
 # -------- compute CUDA_VISIBLE_DEVICES + matching NUMA node for a given GPU island
 # island=0 → GPUs 0,1,2,3 on socket 0; island=1 → GPUs 4,5,6,7 on socket 1.

@@ -15,6 +15,10 @@ source "$SCRIPT_DIR/lib/common.sh"
 OUT="$RESULTS_ROOT/00_env_audit"
 mkdir -p "$OUT"
 
+# 第一道闸：runtime 必须就位（conda env 激活，torch+vllm 可 import）
+# 否则后面所有 probe 都是 bash 错误堆，PASS 也是误报
+require_runtime
+
 log "==> snapshot (global scope)"
 bash "$SCRIPT_DIR/lib/snapshot.sh" "$OUT" global
 
@@ -123,9 +127,22 @@ log "==> critical checks"
 fail=0
 if ! command -v nvidia-smi > /dev/null; then log "FAIL: nvidia-smi missing"; fail=1; fi
 if ! nvidia-smi -L | grep -q "GPU 0"; then log "FAIL: no GPUs visible"; fail=1; fi
+# attention probe 必须有任意 backend ok（否则后续 vLLM 一定起不来）
 if ! grep -q '"status": "ok"' "$OUT/attention_probe.json"; then
-    log "WARN: no attention backend passed probe — see $OUT/attention_probe.json"
+    log "FAIL: 0 attention backend passed probe — see $OUT/attention_probe.json"
+    fail=1
 fi
+# NCCL probe 必须没有 bash 错误（说明 PYTHON_BIN 解析正常）
+if grep -qE 'command not found|No such file' "$OUT/nccl_probe.txt" 2>/dev/null; then
+    log "FAIL: nccl_probe 出现 shell 错误，PYTHON_BIN 可能为空 — see $OUT/nccl_probe.txt"
+    fail=1
+fi
+# vllm/sglang help 必须真有内容（>5 行说明真打印了 help）
+for h in "$OUT/vllm_serve_help.txt" "$OUT/sglang_help.txt"; do
+    if [[ ! -s "$h" ]] || (( $(wc -l < "$h") < 5 )); then
+        log "WARN: $(basename "$h") 内容异常短（<5 行）"
+    fi
+done
 
 # /dev/shm sanity (NCCL SHM path needs it)
 shm_kb=$(df -k /dev/shm | awk 'NR==2 {print $4}')
@@ -134,7 +151,7 @@ log "/dev/shm free: ${shm_gb} GB"
 if (( shm_gb < 16 )); then log "WARN: /dev/shm < 16GB, NCCL SHM path may suffer"; fi
 
 if (( fail )); then
-    emit_status "$OUT" "UNKNOWN_FAIL" "critical preflight failed; see logs"
+    emit_status "$OUT" "BACKEND_UNSUPPORTED" "critical preflight failed; see logs"
     exit 1
 fi
 
