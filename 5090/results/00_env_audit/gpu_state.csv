@@ -1,0 +1,9 @@
+timestamp, index, name, pci.bus_id, pcie.link.gen.current, pcie.link.width.current, pstate, clocks.current.sm [MHz], clocks.current.memory [MHz], power.draw [W], power.limit [W], temperature.gpu, utilization.gpu [%], memory.used [MiB], memory.total [MiB]
+2026/04/26 06:23:58.015, 0, NVIDIA GeForce RTX 5090, 00000000:01:00.0, 1, 16, P8, 22 MHz, 405 MHz, 38.28 W, 575.00 W, 25, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.039, 1, NVIDIA GeForce RTX 5090, 00000000:11:00.0, 1, 16, P8, 22 MHz, 405 MHz, 24.52 W, 575.00 W, 24, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.061, 2, NVIDIA GeForce RTX 5090, 00000000:61:00.0, 1, 16, P8, 22 MHz, 405 MHz, 20.05 W, 575.00 W, 24, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.084, 3, NVIDIA GeForce RTX 5090, 00000000:71:00.0, 1, 16, P8, 22 MHz, 405 MHz, 15.88 W, 575.00 W, 24, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.106, 4, NVIDIA GeForce RTX 5090, 00000000:81:00.0, 1, 16, P8, 22 MHz, 405 MHz, 27.30 W, 575.00 W, 23, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.128, 5, NVIDIA GeForce RTX 5090, 00000000:91:00.0, 1, 16, P8, 22 MHz, 405 MHz, 8.17 W, 575.00 W, 24, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.151, 6, NVIDIA GeForce RTX 5090, 00000000:E1:00.0, 1, 16, P8, 22 MHz, 405 MHz, 16.81 W, 575.00 W, 24, 0 %, 2 MiB, 32607 MiB
+2026/04/26 06:23:58.173, 7, NVIDIA GeForce RTX 5090, 00000000:F1:00.0, 1, 16, P8, 22 MHz, 405 MHz, 14.23 W, 575.00 W, 24, 0 %, 2 MiB, 32607 MiB

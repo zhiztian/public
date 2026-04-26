@@ -1,0 +1,5 @@
+{
+  "status": "SERVER_START_TIMEOUT",
+  "reason": "vllm server didn't ready in 600s",
+  "timestamp": "2026-04-26T12:31:38+0000"
+}

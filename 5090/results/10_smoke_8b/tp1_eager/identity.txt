@@ -1,0 +1,6 @@
+2026-04-26T12:21:31+00:00
+ubuntu
+Linux ubuntu 6.8.0-110-generic #110-Ubuntu SMP PREEMPT_DYNAMIC Thu Mar 19 15:09:20 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+zz
+uid=1001(zz) gid=1001(zz) groups=1001(zz),27(sudo)
+ 12:21:31 up 4 days, 22:50,  4 users,  load average: 0.00, 0.00, 0.00

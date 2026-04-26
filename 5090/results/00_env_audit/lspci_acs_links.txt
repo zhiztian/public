@@ -1,0 +1,172 @@
+00:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+00:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+00:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+00:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+00:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+00:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+00:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+00:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+00:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+00:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+00:14.0 SMBus: Advanced Micro Devices, Inc. [AMD] FCH SMBus Controller (rev 71)
+00:14.3 ISA bridge: Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge (rev 51)
+00:18.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c0
+00:18.1 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c1
+00:18.2 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c2
+00:18.3 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c3
+00:18.4 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c4
+00:18.5 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c5
+00:18.6 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c6
+00:18.7 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c7
+00:19.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c0
+00:19.1 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c1
+00:19.2 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c2
+00:19.3 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c3
+00:19.4 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c4
+00:19.5 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c5
+00:19.6 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c6
+00:19.7 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 12c7
+01:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+01:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+02:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+10:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+10:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+10:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+10:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+10:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+11:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+11:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+20:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+20:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+20:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+20:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+20:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+20:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+20:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+20:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+20:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+21:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+21:00.4 USB controller: Advanced Micro Devices, Inc. [AMD] Device 1557 (rev da) (prog-if 30 [XHCI])
+30:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+30:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+30:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+30:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+31:00.0 Ethernet controller: Intel Corporation I350 Gigabit Network Connection (rev 01)
+31:00.1 Ethernet controller: Intel Corporation I350 Gigabit Network Connection (rev 01)
+40:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+40:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+40:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+50:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+50:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:03.3 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1554 (prog-if 00 [Normal decode])
+50:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+50:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+51:00.0 PCI bridge: ASPEED Technology, Inc. AST1150 PCI-to-PCI Bridge (rev 06) (prog-if 00 [Normal decode])
+52:00.0 VGA compatible controller: ASPEED Technology, Inc. ASPEED Graphics Family (rev 52) (prog-if 00 [VGA controller])
+53:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+53:00.5 Encryption controller: Advanced Micro Devices, Inc. [AMD] Device 156e
+60:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+60:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+60:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+60:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+60:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+61:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+61:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+70:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+70:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+70:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+70:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+70:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+70:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+70:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+70:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+70:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+70:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+70:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+71:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+71:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+72:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+72:00.4 USB controller: Advanced Micro Devices, Inc. [AMD] Device 1557 (rev da) (prog-if 30 [XHCI])
+80:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+80:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+80:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+80:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+80:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+80:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+80:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+80:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+80:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+80:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+80:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+81:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+81:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+82:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+90:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+90:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+90:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+90:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+90:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+91:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+91:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+a0:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+a0:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+a0:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+a0:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+a0:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+a0:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+a0:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+a0:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+a0:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+a1:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+a1:00.4 USB controller: Advanced Micro Devices, Inc. [AMD] Device 1557 (rev da) (prog-if 30 [XHCI])
+b0:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+b0:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+b0:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+c0:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+c0:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+c0:01.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+c0:01.3 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+c0:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+c2:00.0 Non-Volatile memory controller: Intel Corporation NVMe DC SSD [3DNAND, Sentinel Rock Controller] (prog-if 02 [NVM Express])
+d0:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+d0:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+d0:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+d0:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+d0:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+d0:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+d0:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+d0:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+d0:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+d1:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+d1:00.5 Encryption controller: Advanced Micro Devices, Inc. [AMD] Device 156e
+e0:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+e0:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+e0:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+e0:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+e0:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+e1:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+e1:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+f0:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153a
+f0:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 153b (rev 01)
+f0:00.3 Generic system peripheral [0807]: Advanced Micro Devices, Inc. [AMD] Device 153c
+f0:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+f0:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 153e (prog-if 00 [Normal decode])
+f0:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+f0:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+f0:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+f0:05.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+f0:07.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 153d
+f0:07.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+f0:07.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 1555 (prog-if 00 [Normal decode])
+f1:00.0 VGA compatible controller: NVIDIA Corporation Device 2b85 (rev a1) (prog-if 00 [VGA controller])
+f1:00.1 Audio device: NVIDIA Corporation Device 22e8 (rev a1)
+f2:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Device 1556
+f2:00.4 USB controller: Advanced Micro Devices, Inc. [AMD] Device 1557 (rev da) (prog-if 30 [XHCI])
+f3:00.0 SATA controller: Advanced Micro Devices, Inc. [AMD] FCH SATA Controller [AHCI mode] (rev 93) (prog-if 01 [AHCI 1.0])
+f3:00.1 SATA controller: Advanced Micro Devices, Inc. [AMD] FCH SATA Controller [AHCI mode] (rev 93) (prog-if 01 [AHCI 1.0])

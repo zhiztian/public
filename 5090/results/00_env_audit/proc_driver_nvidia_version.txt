@@ -1,0 +1,2 @@
+NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  570.148.08  Release Build  (root@ubuntu)  Tue Apr 21 11:53:10 AM UTC 2026
+GCC version:  gcc version 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 

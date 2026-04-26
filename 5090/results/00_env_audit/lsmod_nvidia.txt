@@ -1,0 +1,6 @@
+nvidia_uvm           2121728  0
+nvidia_drm            135168  0
+nvidia_modeset       1712128  9 nvidia_drm
+nvidia              11628544  35 nvidia_uvm,nvidia_modeset
+video                  77824  1 nvidia_modeset
+ecc                    45056  1 nvidia
